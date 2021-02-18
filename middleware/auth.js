@@ -37,7 +37,7 @@ const createUserToken = (req, user) => {
     throw err
   } else {
     return jwt.sign( // otherwise create and sign a new token
-      { id: user._id, user: email },
+      { id: user._id, user: user.email },
       process.env.JWT_SECRET,
       { expiresIn: '2m' } // TODO: Extend for production
       );
