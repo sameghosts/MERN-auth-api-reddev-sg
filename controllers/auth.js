@@ -21,13 +21,27 @@ router.post('/signup', (req, res) => {
     }))
     .catch(err => {
       console.log(`🚨 Error in the Post signup:`, err);
-      res.json({ error: err })
+      res.json({ error: err.message })
     });
   });
 
 // Login - POST /api/login
 router.post('/login', (req, res) => {
-  res.json({ message: 'Login Post'});
+  // if login details are correct (req.body vs database information)
+  db.User.findOne({ email: req.body.email })
+    .then(user => {
+      // create and send a token via createUserToken
+      res.json({
+        token: createUserToken(req, user),
+        user: user
+      });
+    }).catch(err =>{
+    // send an error 
+      console.log(`🚨 Error in the POST login route`, err);
+      res.json({
+        error: err.message
+      });
+    })
 });
 
 module.exports = router;
