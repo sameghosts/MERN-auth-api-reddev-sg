@@ -1,5 +1,6 @@
+const bcrypt = require('bcrypt');
 const express = require('express');
-const db = require('../models/');
+const db = require('../models');
 const router = express.Router();
 
 
@@ -7,13 +8,18 @@ const router = express.Router();
 
 // Signup - POST /api/signup
 router.post('/signup', (req, res) => {
-  db.User.create(req.body)
-    .then(user => res.json(user))
+  bcrypt.hash(req.body.password, 10)
+    .then(hash => db.User.create({
+      name: req.body.name,
+      email: req.body.email,
+      password: hash
+    }))
+    .then(createdUser => res.json(createdUser))
     .catch(err => {
-      console.log(`🚨 Error in the POST signup:`, err);
-      res.json({ 'error': err});
-    })
-});
+      console.log(`🚨 Error in the Post signup:`, err);
+      res.json({ error: err })
+    });
+  });
 
 // Login - POST /api/login
 router.post('/login', (req, res) => {
